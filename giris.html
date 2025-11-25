@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style1.css" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Giriş</title>
+</head>
+<body>
+  <div class="page-container">
+    <header class="site-header">
+      <h1 class="title">
+        <img src="icon/icons8-pet-50.png" alt="pet" />PET 4 LİFE
+      </h1>
+      <button id="anasyf-btn" class="anasyf-button" onclick="window.location.href='anasyf.html'">AnaSayfa</button>
+    </header>
+
+    <main class="login-section">
+      <h2 class="login-title">Giriş Ekranı</h2>
+      <form class="login-form" id="loginForm">
+        <label for="user-id">ID:</label>
+        <input type="text" id="user-id" name="user-id" required />
+
+        <label for="password">Şifre:</label>
+        <input type="password" id="password" name="password" required />
+
+        <div class="login-buttons">
+          <button type="button" onclick="window.location.href='uyeol.html'">Üye Ol</button>
+          <button type="submit">Giriş</button>
+        </div>
+      </form>
+    </main>
+
+    <footer class="site-footer">
+      <div class="social-media">
+        <a href="#"><img src="icon/icons8-facebook.svg" alt="Facebook" /></a>
+        <a href="#"><img src="icon/icons8-x.svg" alt="X" /></a>
+        <a href="#"><img src="icon/icons8-youtube.svg" alt="YouTube" /></a>
+        <a href="#"><img src="icon/icons8-instagram.svg" alt="Instagram" /></a>
+        <a href="#"><img src="icon/icons8-reddit.svg" alt="Reddit" /></a>
+      </div>
+      <div class="contact-info">
+        <p>© 2025 Pet 4 Life</p>
+        <p>Pet 4 Life, hayvan sahiplenme platformudur.</p>
+        <p>İletişim: 505 217 16 75 / 312 255 10 05</p>
+        <p><a href="mailto:pet4u@mail.com">pet4u@mail.com</a></p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="giris.js"></script>
+</body>
+</html>
