@@ -6,46 +6,25 @@
   <title>Pet 4 Life</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="style2.css">
-    <link rel="stylesheet" href="style1.css">
-
+  <script src="components.js"></script>
 </head>
 <body>
-  <div class="page-container">
-    <header class="site-header">
-      <h1 class="title"><img src="icon/icons8-pet-50.png" alt="pet">PET 4 LİFE</h1>
-      <div class="user-info">
-        <span class="user-icon">👤</span>
-        <span>Merhaba!!</span>
-        <button id="anasyf-btn" class="anasyf-button" onclick="window.location.href= 'anasyf.html'">Çıkış</button>
-      </div>
-    </header>
+  <site-header user action-label="Çıkış" action-href="anasyf.html"></site-header>
 
-    <main class="pet-gallery">
-      <!-- JS ile kartlar yüklenecek -->
-    </main>
-    <!-- Fotoğraf Önizleme Modali -->
-<div id="image-modal" class="modal" style="display:none;">
-  <span id="modal-close" style="cursor:pointer;font-size:24px;position:absolute;top:10px;right:20px;">✖</span>
-  <img id="modal-image" src="" style="max-width:90%; max-height:90%; margin:auto; display:block;" />
-</div>
+  <main class="page container">
+    <!-- JS ile hayvan kartları yüklenecek -->
+    <div class="pet-grid" id="pet-grid"></div>
+  </main>
 
-
-    <footer class="site-footer">
-      <div class="social-media">
-        <a href="#"><img src="icon/icons8-facebook.svg" alt="Facebook"></a>
-        <a href="#"><img src="icon/icons8-x.svg" alt="x"></a>
-        <a href="#"><img src="icon/icons8-youtube.svg" alt="youtube"></a>
-        <a href="#"><img src="icon/icons8-instagram.svg" alt="instagram"></a>
-        <a href="#"><img src="icon/icons8-reddit.svg" alt="reddit"></a>
-      </div>
-      <div class="contact-info">
-        <p>© 2025 Pet 4 Life</p>
-        <p>Pet 4 Life, hayvan sahiplenme platformudur.</p>
-        <p>İletişim: 505 217 16 75 / 312 255 10 05</p>
-        <p><a href="mailto:pet4u@mail.com">pet4u@mail.com</a></p>
-      </div>
-    </footer>
+  <!-- Fotoğraf Önizleme Modalı -->
+  <div id="image-modal" class="modal" role="dialog" aria-modal="true" aria-label="Fotoğraf önizleme">
+    <div class="modal__dialog modal__dialog--media" tabindex="-1">
+      <button type="button" class="modal__close" data-modal-close aria-label="Kapat">&times;</button>
+      <img id="modal-image" class="modal__image" alt="">
+    </div>
   </div>
+
+  <site-footer></site-footer>
 
   <script src="kullanici.js"></script>
 </body>

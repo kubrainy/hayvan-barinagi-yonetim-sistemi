@@ -13,7 +13,7 @@ document.getElementById("uyeForm").addEventListener("submit", async function (e)
   const rol = document.getElementById("rol").value;
 
   try {
-    const res = await fetch("http://localhost:3000/api/uyeol", {
+    const res = await fetch("http://localhost:3001/api/uyeol", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

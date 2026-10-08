@@ -1,255 +1,284 @@
+// Yönetici paneli (yonetici.html)
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("JS dosyası yüklendi");
+  const { h, createPetCard, button, markAdopted, emptyState, openModal, closeModal, showImage, setPhoto } = PetUI;
 
-  fetch("http://localhost:3000/api/istatistikler")
-    .then(res => res.json())
-    .then(stats => {
-      document.getElementById("toplam").textContent = `Toplam Hayvan: ${stats.toplamHayvan}`;
-      document.getElementById("sahiplendirilen").textContent = `Sahiplendirilen: ${stats.sahiplendirilen}`;
-      document.getElementById("barinakta").textContent = `Barınakta Kalan: ${stats.barinaktaKalan}`;
-      document.getElementById("istekler").textContent = `Bekleyen İstek: ${stats.bekleyenIstek}`;
-    });
-
-  document.querySelectorAll('.add-animal').forEach(button => {
-    button.addEventListener('click', function () {
-      document.getElementById('add-animal-form').style.display = 'block';
-    });
-  });
-
+  const animalGrid = document.getElementById("animal-grid");
+  const requestBox = document.getElementById("request-items");
   let tumHayvanlar = [];
 
-  fetch("http://localhost:3000/api/hayvanlar")
-    .then(res => res.json())
-    .then(data => {
-      tumHayvanlar = data;
-      renderHayvanlar(tumHayvanlar);
-    });
+  // ---------- İstatistikler ----------
+  function loadStats() {
+    return fetch("http://localhost:3001/api/istatistikler")
+      .then(res => res.json())
+      .then(stats => {
+        document.getElementById("toplam").textContent = stats.toplamHayvan;
+        document.getElementById("sahiplendirilen").textContent = stats.sahiplendirilen;
+        document.getElementById("barinakta").textContent = stats.barinaktaKalan;
+        document.getElementById("istekler").textContent = stats.bekleyenIstek;
+      })
+      .catch(err => console.error("❌ İstatistikler yüklenemedi:", err));
+  }
 
- function renderHayvanlar(list) {
-  const container = document.querySelector('.animal-list');
-  if (!container) return;
-  container.querySelectorAll(".pet-card").forEach(card => card.remove());
+  loadStats();
 
-  list.forEach(hayvan => {  // 🔧 Eksik olan forEach eklendi
-    const card = document.createElement("div");
-    card.className = "pet-card";
-    card.innerHTML = `
-      <img src="${hayvan.foto}" alt="${hayvan.ad}">
-      <div class="pet-info">
-        <p>Adı: ${hayvan.ad}</p>
-        <p>Cinsi: ${hayvan.cins}</p>
-        <p><input type="checkbox" ${hayvan.asi ? 'checked' : ''} disabled> Aşıları</p>
-        <p>Doğum Tarihi: ${hayvan.dogumTarihi || "Bilinmiyor"}</p>
-        <p>Şehir: ${hayvan.sehir || "Belirtilmemiş"}</p>
-        <p>İletişim: ${hayvan.iletisim || "Belirtilmemiş"}</p>
-        ${hayvan.sahiplendi ? '<p style="color:green;font-weight:bold">✅ Sahiplendi</p>' : ''}
-        <button class="edit-button"
-          data-id="${hayvan._id}"
-          data-ad="${hayvan.ad}"
-          data-cins="${hayvan.cins}"
-          data-asi="${hayvan.asi}"
-          data-foto="${hayvan.foto}"
-          data-dogum="${hayvan.dogumTarihi || ''}"
-          data-sehir="${hayvan.sehir || ''}"
-          data-iletisim="${hayvan.iletisim || ''}">
-          Düzenle
-        </button>
-        <button class="delete-button" data-id="${hayvan._id}">Sil</button>
-      </div>
-    `;
-    container.insertBefore(card, container.querySelector('.add-animal'));
-  });
-
-  // Silme butonları
-  document.querySelectorAll('.delete-button').forEach(button => {
-    button.addEventListener('click', function () {
-      const id = this.dataset.id;
-      if (confirm("Silmek istediğinize emin misiniz?")) {
-        fetch(`http://localhost:3000/api/hayvanlar/${id}`, {
-          method: 'DELETE'
-        })
-          .then(res => res.json())
-          .then(() => location.reload());
-      }
-    });
-  });
-}
-
-
-  document.querySelectorAll(".istatistik-kutu").forEach(kutu => {
-    const filter = kutu.dataset.filter;
+  // "Bekleyen İstek" kutusu: istek paneline kaydır ve kısa süre vurgula
+  document.querySelectorAll("[data-scroll-to]").forEach(kutu => {
     kutu.addEventListener("click", () => {
-      document.querySelectorAll(".istatistik-kutu").forEach(k => k.classList.remove("aktif-kutu"));
-      kutu.classList.add("aktif-kutu");
+      const hedef = document.getElementById(kutu.dataset.scrollTo);
+      if (!hedef) return;
+      hedef.scrollIntoView({ behavior: "smooth", block: "start" });
+      hedef.focus({ preventScroll: true });
+      hedef.classList.add("is-highlight");
+      setTimeout(() => hedef.classList.remove("is-highlight"), 1600);
+    });
+  });
 
-      if (filter === "all") {
-        renderHayvanlar(tumHayvanlar);
-      } else if (filter === "sahiplendi") {
-        renderHayvanlar(tumHayvanlar.filter(h => h.sahiplendi));
+  // ---------- Hayvan listesi ----------
+  function renderHayvanlar(list) {
+    animalGrid.replaceChildren();
+
+    if (list.length === 0) {
+      animalGrid.append(emptyState("Gösterilecek hayvan yok."));
+      return;
+    }
+
+    list.forEach(hayvan => {
+      animalGrid.append(createPetCard(hayvan, {
+        // Fotoğrafa tıklanınca büyük hali göster
+        onImageClick: hayvan => showImage(hayvan.foto, hayvan.ad),
+        actions: [
+          button({ label: "Düzenle", variant: "secondary", className: "edit-button", onClick: () => openEditForm(hayvan) }),
+          button({ label: "Sil", variant: "danger", className: "delete-button", onClick: () => deleteHayvan(hayvan._id) })
+        ]
+      }));
+    });
+  }
+
+  function deleteHayvan(id) {
+    if (!confirm("Silmek istediğinize emin misiniz?")) return;
+
+    fetch(`http://localhost:3001/api/hayvanlar/${id}`, { method: "DELETE" })
+      .then(res => res.json())
+      .then(() => location.reload());
+  }
+
+  // Filtre kutuları (Toplam / Sahiplendirilen / Barınakta Kalan)
+  const filtreKutulari = document.querySelectorAll(".stat[data-filter]");
+  filtreKutulari.forEach(kutu => {
+    kutu.addEventListener("click", () => {
+      filtreKutulari.forEach(k => {
+        k.classList.toggle("is-active", k === kutu);
+        k.setAttribute("aria-pressed", String(k === kutu));
+      });
+
+      const filter = kutu.dataset.filter;
+      if (filter === "sahiplendi") {
+        renderHayvanlar(tumHayvanlar.filter(hayvan => hayvan.sahiplendi));
       } else if (filter === "barinakta") {
-        renderHayvanlar(tumHayvanlar.filter(h => !h.sahiplendi));
+        renderHayvanlar(tumHayvanlar.filter(hayvan => !hayvan.sahiplendi));
+      } else {
+        renderHayvanlar(tumHayvanlar);
       }
     });
   });
 
-  window.addAnimal = function (event) {
+  // ---------- Hayvan ekle ----------
+  document.getElementById("add-animal-form").addEventListener("submit", function (event) {
     event.preventDefault();
-    const ad = document.querySelector('[name="ad"]').value;
-    const cins = document.querySelector('[name="cins"]').value;
-    const asi = document.querySelector('[name="asi"]').checked;
-    const foto = document.querySelector('[name="foto"]').value;
-    const dogumTarihi = document.querySelector('[name="dogumTarihi"]').value;
-    const sehir = document.querySelector('[name="sehir"]').value;
-    const iletisim = document.querySelector('[name="iletisim"]').value;
+    const f = event.target.elements;
 
-    fetch('http://localhost:3000/api/hayvanlar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ad, cins, asi, foto, dogumTarihi, sehir, iletisim })
+    if (!f.foto.value) {
+      alert("Lütfen bir fotoğraf seçin.");
+      return;
+    }
+
+    fetch("http://localhost:3001/api/hayvanlar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ad: f.ad.value,
+        cins: f.cins.value,
+        asi: f.asi.checked,
+        foto: f.foto.value,
+        dogumTarihi: f.dogumTarihi.value,
+        sehir: f.sehir.value,
+        iletisim: f.iletisim.value
+      })
     })
       .then(res => res.json())
       .then(() => {
         alert("Hayvan başarıyla eklendi!");
-        document.getElementById('add-animal-form').style.display = 'none';
+        closeModal("add-animal-modal");
         event.target.reset();
+        setPhoto(event.target.querySelector(".photo-field"), "");
         location.reload();
+      })
+      .catch(err => {
+        console.error("❌ Ekleme hatası:", err);
+        alert("Hayvan eklenemedi.");
       });
-  };
-});
+  });
 
-// Düzenle butonu
-document.addEventListener('click', function (e) {
-  if (e.target.classList.contains('edit-button')) {
-    const modal = document.getElementById('edit-animal-form');
-    modal.style.display = 'block';
-    modal.querySelector('[name="edit-id"]').value = e.target.dataset.id;
-    modal.querySelector('[name="edit-ad"]').value = e.target.dataset.ad;
-    modal.querySelector('[name="edit-cins"]').value = e.target.dataset.cins;
-    modal.querySelector('[name="edit-foto"]').value = e.target.dataset.foto;
-    modal.querySelector('[name="edit-dogum"]').value = e.target.dataset.dogum;
-    modal.querySelector('[name="edit-sehir"]').value = e.target.dataset.sehir;
-    modal.querySelector('[name="edit-asi"]').checked = e.target.dataset.asi === 'true';
-    modal.querySelector('[name="edit-iletisim"]').value = e.target.dataset.iletisim || "";
+  // ---------- Hayvan düzenle ----------
+  const editForm = document.getElementById("edit-animal-form");
+
+  function openEditForm(hayvan) {
+    const f = editForm.elements;
+    f["edit-id"].value = hayvan._id;
+    f["edit-ad"].value = hayvan.ad || "";
+    f["edit-cins"].value = hayvan.cins || "";
+    setPhoto(editForm.querySelector(".photo-field"), hayvan.foto); // yeni seçilmezse mevcut fotoğraf korunur
+    f["edit-dogum"].value = hayvan.dogumTarihi || "";
+    f["edit-sehir"].value = hayvan.sehir || "";
+    f["edit-asi"].checked = !!hayvan.asi;
+    f["edit-iletisim"].value = hayvan.iletisim || "";
+    openModal("edit-animal-modal");
   }
-});
 
+  editForm.addEventListener("submit", function (event) {
+    event.preventDefault(); // sayfa yönlendirmesini engeller
+    const f = event.target.elements;
 
-function updateAnimal(event) {
-  event.preventDefault(); // sayfa yönlendirmesini engeller
-
-  const id = document.querySelector('[name="edit-id"]').value;
-  const ad = document.querySelector('[name="edit-ad"]').value;
-  const cins = document.querySelector('[name="edit-cins"]').value;
-  const asi = document.querySelector('[name="edit-asi"]').checked;
-  const foto = document.querySelector('[name="edit-foto"]').value;
-  const dogumTarihi = document.querySelector('[name="edit-dogum"]').value;
-  const sehir = document.querySelector('[name="edit-sehir"]').value;
-  const iletisim = document.querySelector('[name="edit-iletisim"]').value;
-
-  fetch(`http://localhost:3000/api/hayvanlar/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ad, cins, asi, foto, dogumTarihi, sehir, iletisim })
-  })
-    .then(res => res.json())
-    .then(() => {
-      alert("Bilgiler güncellendi!");
-      document.getElementById("edit-animal-form").style.display = "none";
-      location.reload();
+    fetch(`http://localhost:3001/api/hayvanlar/${f["edit-id"].value}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ad: f["edit-ad"].value,
+        cins: f["edit-cins"].value,
+        asi: f["edit-asi"].checked,
+        foto: f["edit-foto"].value,
+        dogumTarihi: f["edit-dogum"].value,
+        sehir: f["edit-sehir"].value,
+        iletisim: f["edit-iletisim"].value
+      })
     })
-    .catch(err => {
-      console.error("❌ Güncelleme hatası:", err);
-      alert("Güncelleme başarısız.");
-    });
-}
-// Sahiplenme isteklerini getir
-fetch("http://localhost:3000/api/istekler")
-  .then(res => res.json())
-  .then(data => {
-    const container = document.querySelector(".request-list");
-    const title = container.querySelector("h2");
-
-    // Sahiplendirilmiş hayvanları çek
-    fetch("http://localhost:3000/api/hayvanlar")
       .then(res => res.json())
-      .then(hayvanlar => {
-        const sahiplendirilmisHayvanAdlari = hayvanlar
-          .filter(h => h.sahiplendi)
-          .map(h => h.ad.toLowerCase());
+      .then(() => {
+        alert("Bilgiler güncellendi!");
+        closeModal("edit-animal-modal");
+        location.reload();
+      })
+      .catch(err => {
+        console.error("❌ Güncelleme hatası:", err);
+        alert("Güncelleme başarısız.");
+      });
+  });
 
-        data.forEach(istek => {
-          const item = document.createElement("div");
-          item.className = "request-item";
-          item.innerHTML = `
-            <p>${istek.gonderen} kullanıcısı ${istek.hayvanAdi} adlı hayvanı sahiplenmek istiyor</p>
-            <button class="onayla">Onayla</button>
-            <button class="reddet">Reddet</button>
-          `;
+  // ---------- Sahiplenme istekleri ----------
+  function disableOnayla(btn) {
+    btn.disabled = true;
+    btn.textContent = "Zaten Sahiplendi";
+  }
 
-          const onaylaBtn = item.querySelector(".onayla");
-          const reddetBtn = item.querySelector(".reddet");
+  function istegiOnayla(istek) {
+    fetch(`http://localhost:3001/api/hayvan-sahiplendir/${encodeURIComponent(istek.hayvanAdi)}`, {
+      method: "PATCH"
+    })
+      .then(res => res.json())
+      .then(result => {
+        if (!result.success) {
+          alert("Hayvan zaten sahiplendirilmiş.");
+          return;
+        }
 
-          // Eğer zaten sahiplendiyse, onayla butonunu devre dışı bırak
-          if (sahiplendirilmisHayvanAdlari.includes(istek.hayvanAdi.toLowerCase())) {
-            onaylaBtn.disabled = true;
-            onaylaBtn.textContent = "Zaten Sahiplendi";
-          }
-
-          // ONAYLA
-          onaylaBtn.addEventListener("click", () => {
-            fetch(`http://localhost:3000/api/hayvan-sahiplendir/${encodeURIComponent(istek.hayvanAdi)}`, {
-              method: "PATCH"
-            })
-              .then(res => res.json())
-              .then(result => {
-                if (result.success) {
-                  // Tüm aynı hayvana ait isteklerdeki onayla butonlarını devre dışı bırak
-                  document.querySelectorAll(".request-item").forEach(el => {
-                    if (el.textContent.includes(istek.hayvanAdi)) {
-                      const btn = el.querySelector(".onayla");
-                      if (btn) {
-                        btn.disabled = true;
-                        btn.textContent = "Zaten Sahiplendi";
-                      }
-                    }
-                  });
-
-                  // Hayvan kartına "Sahiplendi" etiketi ekleyin
-                  const kartlar = document.querySelectorAll(".pet-card");
-                  kartlar.forEach(kart => {
-                    if (kart.textContent.includes(istek.hayvanAdi)) {
-                      const info = kart.querySelector(".pet-info");
-                      if (!info.innerHTML.includes("Sahiplendi")) {
-                        const etiket = document.createElement("p");
-                        etiket.textContent = "✅ Sahiplendi";
-                        etiket.style.color = "green";
-                        etiket.style.fontWeight = "bold";
-                        info.appendChild(etiket);
-                      }
-                    }
-                  });
-                } else {
-                  alert("Hayvan zaten sahiplendirilmiş.");
-                }
-              });
-          });
-
-          // REDDET
-          reddetBtn.addEventListener("click", () => {
-            fetch(`http://localhost:3000/api/istek/${istek._id}`, {
-              method: "DELETE"
-            })
-              .then(() => item.remove());
-          });
-
-          container.appendChild(item);
+        // Aynı hayvana ait tüm isteklerdeki onayla butonlarını devre dışı bırak
+        requestBox.querySelectorAll(".request-item").forEach(item => {
+          if (item.dataset.ad === istek.hayvanAdi) disableOnayla(item.querySelector(".onayla"));
         });
 
-        if (data.length === 0) {
-          const p = document.createElement("p");
-          p.textContent = "Bekleyen istek yok.";
-          container.appendChild(p);
-        }
+        // Hayvan kartına "Sahiplendi" rozeti ekle
+        markAdopted(istek.hayvanAdi);
+        tumHayvanlar.forEach(hayvan => {
+          if (hayvan.ad === istek.hayvanAdi) hayvan.sahiplendi = true;
+        });
       });
-  })
-  .catch(err => console.error("❌ Sahiplenme istekleri yüklenemedi:", err));
+  }
+
+  function istegiReddet(istek, item) {
+    fetch(`http://localhost:3001/api/istek/${istek._id}`, { method: "DELETE" })
+      .then(() => {
+        item.remove();
+        if (requestBox.children.length === 0) requestBox.append(emptyState("Bekleyen istek yok."));
+        loadStats();
+      });
+  }
+
+  function createRequestItem(istek, zatenSahiplendi) {
+    const onaylaBtn = button({ label: "Onayla", variant: "primary", className: "onayla", onClick: () => istegiOnayla(istek) });
+    const reddetBtn = button({ label: "Reddet", variant: "danger", className: "reddet", onClick: () => istegiReddet(istek, item) });
+
+    // Hayvan zaten sahiplendiyse onayla butonunu devre dışı bırak
+    if (zatenSahiplendi) disableOnayla(onaylaBtn);
+
+    const item = h("div", { class: "request-item", "data-ad": istek.hayvanAdi },
+      h("p", { class: "request-item__text" },
+        h("strong", {}, istek.gonderen), " kullanıcısı ",
+        h("strong", {}, istek.hayvanAdi), " adlı hayvanı sahiplenmek istiyor"
+      ),
+      h("div", { class: "request-item__actions" }, onaylaBtn, reddetBtn)
+    );
+    return item;
+  }
+
+  function renderIstekler(istekler, hayvanlar) {
+    requestBox.replaceChildren();
+
+    if (istekler.length === 0) {
+      requestBox.append(emptyState("Bekleyen istek yok."));
+      return;
+    }
+
+    const sahiplendirilmisAdlar = new Set(
+      hayvanlar.filter(hayvan => hayvan.sahiplendi).map(hayvan => (hayvan.ad || "").toLowerCase())
+    );
+
+    istekler.forEach(istek => {
+      requestBox.append(createRequestItem(istek, sahiplendirilmisAdlar.has((istek.hayvanAdi || "").toLowerCase())));
+    });
+  }
+
+  // ---------- Verileri yükle ----------
+  fetch("http://localhost:3001/api/hayvanlar")
+    .then(res => res.json())
+    .then(data => {
+      tumHayvanlar = data;
+      renderHayvanlar(tumHayvanlar);
+    })
+    .catch(err => {
+      console.error("❌ Hayvanlar yüklenemedi:", err);
+      animalGrid.replaceChildren(emptyState("Hayvanlar yüklenemedi."));
+    });
+
+  // Kullanıcıların gönderdiği istekleri çeker. Liste değişmediyse yeniden çizmez.
+  let sonIstekler = null;
+
+  function loadIstekler() {
+    return Promise.all([
+      fetch("http://localhost:3001/api/istekler").then(res => res.json()),
+      fetch("http://localhost:3001/api/hayvanlar").then(res => res.json())
+    ])
+      .then(([istekler, hayvanlar]) => {
+        const imza = istekler.map(istek => istek._id).join(",");
+        if (imza === sonIstekler) return;
+        sonIstekler = imza;
+        renderIstekler(istekler, hayvanlar);
+      })
+      .catch(err => {
+        console.error("❌ Sahiplenme istekleri yüklenemedi:", err);
+        // Liste daha önce yüklendiyse olduğu gibi bırak, sadece ilk yüklemede hata göster
+        if (sonIstekler === null) requestBox.replaceChildren(emptyState("İstekler yüklenemedi."));
+      });
+  }
+
+  loadIstekler();
+
+  // Yeni gelen istekler sayfayı yenilemeden düşsün: 10 saniyede bir ve sekmeye dönünce kontrol et
+  function yenile() {
+    if (document.hidden) return;
+    loadStats();
+    loadIstekler();
+  }
+
+  setInterval(yenile, 10000);
+  document.addEventListener("visibilitychange", yenile);
+});

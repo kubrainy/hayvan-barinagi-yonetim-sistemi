@@ -3,51 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style1.css" />
-  <link rel="stylesheet" href="style.css" />
   <title>Giriş</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style1.css" />
+  <script src="components.js"></script>
 </head>
 <body>
-  <div class="page-container">
-    <header class="site-header">
-      <h1 class="title">
-        <img src="icon/icons8-pet-50.png" alt="pet" />PET 4 LİFE
-      </h1>
-      <button id="anasyf-btn" class="anasyf-button" onclick="window.location.href='anasyf.html'">AnaSayfa</button>
-    </header>
+  <site-header action-label="AnaSayfa" action-href="anasyf.html"></site-header>
 
-    <main class="login-section">
-      <h2 class="login-title">Giriş Ekranı</h2>
-      <form class="login-form" id="loginForm">
-        <label for="user-id">ID:</label>
-        <input type="text" id="user-id" name="user-id" required />
-
-        <label for="password">Şifre:</label>
-        <input type="password" id="password" name="password" required />
-
-        <div class="login-buttons">
-          <button type="button" onclick="window.location.href='uyeol.html'">Üye Ol</button>
-          <button type="submit">Giriş</button>
-        </div>
-      </form>
-    </main>
-
-    <footer class="site-footer">
-      <div class="social-media">
-        <a href="#"><img src="icon/icons8-facebook.svg" alt="Facebook" /></a>
-        <a href="#"><img src="icon/icons8-x.svg" alt="X" /></a>
-        <a href="#"><img src="icon/icons8-youtube.svg" alt="YouTube" /></a>
-        <a href="#"><img src="icon/icons8-instagram.svg" alt="Instagram" /></a>
-        <a href="#"><img src="icon/icons8-reddit.svg" alt="Reddit" /></a>
+  <main class="auth">
+    <h2 class="auth__title">Giriş Ekranı</h2>
+    <form class="form form--narrow" id="loginForm">
+      <div class="field">
+        <label class="label" for="user-id">ID (kullanıcı adı)</label>
+        <input class="input" type="text" id="user-id" name="user-id" autocomplete="username" required />
       </div>
-      <div class="contact-info">
-        <p>© 2025 Pet 4 Life</p>
-        <p>Pet 4 Life, hayvan sahiplenme platformudur.</p>
-        <p>İletişim: 505 217 16 75 / 312 255 10 05</p>
-        <p><a href="mailto:pet4u@mail.com">pet4u@mail.com</a></p>
+
+      <div class="field">
+        <label class="label" for="password">Şifre</label>
+        <input class="input" type="password" id="password" name="password" autocomplete="current-password" required />
       </div>
-    </footer>
-  </div>
+
+      <div class="form__actions">
+        <button class="btn btn--secondary" type="button" onclick="window.location.href='uyeol.html'">Üye Ol</button>
+        <button class="btn btn--primary" type="submit">Giriş</button>
+      </div>
+    </form>
+  </main>
+
+  <site-footer></site-footer>
 
   <script src="giris.js"></script>
 </body>

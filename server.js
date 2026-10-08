@@ -4,7 +4,8 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+// Fotoğraflar küçültülmüş veri adresi olarak geldiği için varsayılan 100kb sınırı yetmez
+app.use(express.json({ limit: '10mb' }));
 
 // MongoDB bağlantısı
 mongoose.connect('mongodb://localhost:27017/pet4life')
@@ -212,6 +213,6 @@ app.get('/api/istatistikler', async (req, res) => {
 });
 
 // Sunucuyu başlat
-app.listen(3000, () => {
-  console.log('🚀 Sunucu 3000 portunda çalışıyor');
+app.listen(3001, () => {
+  console.log('🚀 Sunucu 3001 portunda çalışıyor');
 });

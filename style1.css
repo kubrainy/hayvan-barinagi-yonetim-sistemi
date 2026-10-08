@@ -1,92 +1,150 @@
+/* =========================================================
+   style1.css  -  form bileşenleri ve giriş / üye ol sayfası
+   (renkler ve ölçüler style.css içindeki değişkenlerden gelir)
+   ========================================================= */
 
-.login-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 1rem;
-  }
-  
-  .login-title {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    color: #57595e;
-  }
-  
-  .login-form {
-    background-color: #a49393;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 300px;
-  }
-  
-  .login-form label {
-    color: white;
-    font-weight: bold;
-  }
-  
-  .login-form input {
-    padding: 0.5rem;
-    border: none;
-    border-radius: 5px;
-    background-color: #57595e;
-    color: white;
-  }
-  
-  .login-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-  
-  .login-buttons button {
-    flex: 1;
-    padding: 0.5rem;
-    background-color: #57595e;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  }
-  .site-header .anasyf-button {
-    padding: 0.5rem 1rem;
-    background-color: #f8d6d9;
-    border: 2px solid #4b2e2e;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .register-form {
-    background-color: #a49393;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 300px;
-  }
-  
-  .register-form input,
-  .register-form textarea {
-    padding: 0.5rem;
-    border: none;
-    border-radius: 5px;
-    background-color: #57595e;
-    color: white;
-  }
-  
-  .register-form button {
-    padding: 0.5rem;
-    background-color: #57595e;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  }
-  
+/* ---------- Sayfa: giriş / üye ol ---------- */
+.auth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: clamp(1.5rem, 6vw, 3.5rem) var(--gutter);
+}
+
+.auth__title {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  text-align: center;
+}
+
+/* ---------- Bileşen: Form ---------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.form--narrow {
+  max-width: 400px;
+}
+
+.form--wide {
+  max-width: 680px;
+}
+
+/* Modal içinde kullanılırken ikinci bir kart çerçevesi olmasın */
+.form--plain {
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+.form__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 1rem;
+}
+
+.form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.form__actions .btn {
+  flex: 1 1 140px;
+}
+
+/* ---------- Bileşen: Alan (etiket + giriş) ---------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.field--full {
+  grid-column: 1 / -1;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  font-size: 1rem; /* 16px: iOS'ta odaklanınca otomatik yakınlaştırmayı engeller */
+  color: var(--text);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input::placeholder {
+  color: #6b7480;
+}
+
+.input:hover {
+  border-color: #c4bdb0;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+textarea.input {
+  min-height: 5.5rem;
+  resize: vertical;
+}
+
+/* ---------- Bileşen: Fotoğraf seçici ---------- */
+.photo-field__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.photo-field__preview {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: zoom-in;
+}
+
+.photo-field__pick:focus-within {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---------- Bileşen: Onay kutusu ---------- */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.checkbox input {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--primary);
+}

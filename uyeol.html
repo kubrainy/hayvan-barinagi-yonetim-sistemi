@@ -1,54 +1,71 @@
 <!DOCTYPE html>
 <html lang="tr">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="style.css">
-        <link rel="stylesheet" href="style1.css">
-        <title>Üye Ol</title>
-    </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Üye Ol</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style1.css">
+  <script src="components.js"></script>
+</head>
+<body>
+  <site-header action-label="AnaSayfa" action-href="anasyf.html"></site-header>
 
-    <body>
-        <header class="site-header">
-            <h1 class="title"><img src="icon/icons8-pet-50.png" alt="pet">PET 4 LİFE</h1>
-            <button id="anasyf-btn" class="anasyf-button" onclick="window.location.href= 'anasyf.html'">AnaSayfa</button>
-        </header>
+  <main class="auth">
+    <h2 class="auth__title">Üye Ol</h2>
+    <form class="form form--wide" id="uyeForm">
+      <div class="form__grid">
+        <div class="field">
+          <label class="label" for="ad">Ad</label>
+          <input class="input" type="text" id="ad" name="ad" autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label class="label" for="soyad">Soyad</label>
+          <input class="input" type="text" id="soyad" name="soyad" autocomplete="family-name">
+        </div>
+        <div class="field">
+          <label class="label" for="yas">Yaş</label>
+          <input class="input" type="text" id="yas" name="yas" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label class="label" for="tel">Tel No</label>
+          <input class="input" type="tel" id="tel" name="tel" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label class="label" for="tc">TC</label>
+          <input class="input" type="text" id="tc" name="tc" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label class="label" for="email">E-posta</label>
+          <input class="input" type="email" id="email" name="email" autocomplete="email">
+        </div>
+        <div class="field">
+          <label class="label" for="user-id">ID (kullanıcı adı)</label>
+          <input class="input" type="text" id="user-id" name="id" autocomplete="username">
+        </div>
+        <div class="field">
+          <label class="label" for="password">Şifre</label>
+          <input class="input" type="password" id="password" name="sifre" autocomplete="new-password">
+        </div>
+        <div class="field field--full">
+          <label class="label" for="rol">Rol</label>
+          <select class="input" id="rol">
+            <option value="kullanici">Kullanıcı</option>
+            <option value="yonetici">Yönetici</option>
+          </select>
+        </div>
+        <div class="field field--full">
+          <label class="label" for="adres">Adres</label>
+          <textarea class="input" id="adres" name="adres" rows="3" autocomplete="street-address"></textarea>
+        </div>
+      </div>
 
-        <main class="login-section">
-            <form class="register-form" id="uyeForm">
-                <input type="text" name="ad" placeholder="Ad">   
-                <input type="text" name="soyad" placeholder="Soyad">
-                <input type="text" name="yas" placeholder="Yaş">
-                <input type="text" name="tel" placeholder="Tel No">
-                <input type="text" name="tc" placeholder="TC">
-                <input type="email" name="email" placeholder="G-mail">
-                <input type="text" id="user-id" name="id" placeholder="id">
-                <input type="password" id="password" name="sifre" placeholder="Şifre">
-                <select id="rol">
-                  <option value="kullanici">Kullanıcı</option>
-                  <option value="yonetici">Yönetici</option>
-                </select>
-                <textarea name="adres" placeholder="Adres" rows="3"></textarea>
-                <button type="submit">Üye Ol</button>
-            </form>
-        </main>
+      <button class="btn btn--primary btn--block" type="submit">Üye Ol</button>
+    </form>
+  </main>
 
-        <footer class="site-footer">
-            <div class="social-media">
-              <a href="#"><img src="icon/icons8-facebook.svg" alt="Facebook"></a>
-              <a href="#"><img src="icon/icons8-x.svg" alt="x"></a>
-              <a href="#"><img src="icon/icons8-youtube.svg" alt="youtube"></a>
-              <a href="#"><img src="icon/icons8-instagram.svg" alt="instagram"></a>
-              <a href="#"><img src="icon/icons8-reddit.svg" alt="reddit"></a>
-            </div>
-            <div class="contact-info">
-              <p>© 2025 Pet 4 Life</p>
-              <p>Pet 4 Life, hayvan sahiplenme platformudur.</p>
-              <p>İletişim: 505 217 16 75  /  312 255 10 05 </p>
-              <p><a href="mailto:pet4u@mail.com">pet4u@mail.com</a></p>
-            </div>
-        </footer>
+  <site-footer></site-footer>
 
-        <script src="uyeol.js"></script>
-    </body>
+  <script src="uyeol.js"></script>
+</body>
 </html>

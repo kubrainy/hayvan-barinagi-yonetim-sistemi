@@ -7,130 +7,162 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="style1.css" />
   <link rel="stylesheet" href="style2.css" />
+  <script src="components.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <h1 class="title"><img src="icon/icons8-pet-50.png" alt="pet" />PET 4 LİFE</h1>
-    <div class="user-info">
-      <span class="user-icon">👤</span>
-      <span>Merhaba!!</span>
-      <button id="anasyf-btn" class="anasyf-button" onclick="window.location.href='anasyf.html'">Çıkış</button>
-    </div>
-  </header>
+  <site-header user action-label="Çıkış" action-href="anasyf.html"></site-header>
 
-  <main class="admin-panel">
-    <div class="istatistik-kutular">
-      <div class="istatistik-kutu" id="toplam" data-filter="all">Toplam Hayvan: ...</div>
-      <div class="istatistik-kutu" id="sahiplendirilen" data-filter="sahiplendi">Sahiplendirilen: ...</div>
-      <div class="istatistik-kutu" id="barinakta" data-filter="barinakta">Barınakta Kalan: ...</div>
-      <div class="istatistik-kutu" id="istekler">Bekleyen İstek: ...</div>
-    </div>
-
-    <section class="animal-list">
-      <!-- Hayvan kartları buraya JS ile gelecek -->
-      <button class="add-animal">Hayvan Ekle</button>
+  <main class="page container">
+    <section class="stats" aria-label="İstatistikler">
+      <button type="button" class="stat is-active" data-filter="all" aria-pressed="true">
+        <span class="stat__label">Toplam Hayvan</span>
+        <span class="stat__value" id="toplam">...</span>
+      </button>
+      <button type="button" class="stat" data-filter="sahiplendi" aria-pressed="false">
+        <span class="stat__label">Sahiplendirilen</span>
+        <span class="stat__value" id="sahiplendirilen">...</span>
+      </button>
+      <button type="button" class="stat" data-filter="barinakta" aria-pressed="false">
+        <span class="stat__label">Barınakta Kalan</span>
+        <span class="stat__value" id="barinakta">...</span>
+      </button>
+      <button type="button" class="stat" data-scroll-to="request-panel" aria-controls="request-panel">
+        <span class="stat__label">Bekleyen İstek</span>
+        <span class="stat__value" id="istekler">...</span>
+      </button>
     </section>
 
-    <section class="request-list">
-      <h2>Sahiplenme İstekleri</h2>
-      <!-- İstekler JS ile yüklenecek -->
-    </section>
+    <div class="admin-layout">
+      <section class="animal-list">
+        <div class="section-head">
+          <h2 class="section-title">Hayvanlar</h2>
+          <button type="button" class="btn btn--primary add-animal" data-modal-open="add-animal-modal">Hayvan Ekle</button>
+        </div>
+        <!-- Hayvan kartları buraya JS ile gelecek -->
+        <div class="pet-grid" id="animal-grid"></div>
+      </section>
+
+      <section class="request-list panel" id="request-panel" tabindex="-1" aria-live="polite">
+        <div class="section-head">
+          <h2 class="section-title">Sahiplenme İstekleri</h2>
+        </div>
+        <!-- İstekler JS ile yüklenecek -->
+        <div class="request-list__items" id="request-items"></div>
+      </section>
+    </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="social-media">
-      <a href="#"><img src="icon/icons8-facebook.svg" alt="Facebook"></a>
-      <a href="#"><img src="icon/icons8-x.svg" alt="x"></a>
-      <a href="#"><img src="icon/icons8-youtube.svg" alt="youtube"></a>
-      <a href="#"><img src="icon/icons8-instagram.svg" alt="instagram"></a>
-      <a href="#"><img src="icon/icons8-reddit.svg" alt="reddit"></a>
-    </div>
-    <div class="contact-info">
-      <p>© 2025 Pet 4 Life</p>
-      <p>Pet 4 Life, hayvan sahiplenme platformudur.</p>
-      <p>İletişim: 505 217 16 75 / 312 255 10 05</p>
-      <p><a href="mailto:pet4u@mail.com">pet4u@mail.com</a></p>
-    </div>
-  </footer>
+  <site-footer></site-footer>
 
   <!-- Hayvan Ekleme Modalı -->
-  <div id="add-animal-form" class="modal" style="display:none;">
-    <form class="register-form" onsubmit="addAnimal(event)" action="#">
-      <label>Fotoğraf URL'si:</label>
-      <input type="text" name="foto" placeholder="resim/yeni-hayvan.jpg" required />
-      <h3>Yeni Hayvan Ekle</h3>
-      <input type="text" name="ad" placeholder="Adı" required />
-      <input type="text" name="cins" placeholder="Cinsi" required />
-      <label><input type="checkbox" name="asi" /> Aşıları Yapıldı</label>
-      <label>Doğum Tarihi:</label>
-      <input type="date" name="dogumTarihi" required />
-      <label>Şehir:</label>
-      <input type="text" name="sehir" placeholder="Bulunduğu şehir" required />
-      <label>İletişim:</label>
-      <input type="tel" name="iletisim" placeholder="05xx xxx xx xx" required />
-      <button type="submit">Ekle</button>
-      <button type="button" onclick="document.getElementById('add-animal-form').style.display='none'">Kapat</button>
-    </form>
+  <div id="add-animal-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="add-animal-title">
+    <div class="modal__dialog" tabindex="-1">
+      <button type="button" class="modal__close" data-modal-close aria-label="Kapat">&times;</button>
+      <h2 class="modal__title" id="add-animal-title">Yeni Hayvan Ekle</h2>
+      <form class="form form--plain" id="add-animal-form">
+        <div class="form__grid">
+          <div class="field field--full photo-field">
+            <span class="label">Fotoğraf</span>
+            <div class="photo-field__row">
+              <img class="photo-field__preview" alt="Seçilen fotoğraf önizlemesi" role="button" tabindex="0" title="Büyütmek için tıkla" hidden />
+              <label class="btn btn--secondary btn--sm photo-field__pick">
+                <span class="photo-field__pick-text">Fotoğraf seç</span>
+                <input class="visually-hidden" type="file" accept="image/*" data-photo-input />
+              </label>
+            </div>
+            <input type="hidden" name="foto" />
+          </div>
+          <div class="field">
+            <label class="label" for="add-ad">Adı</label>
+            <input class="input" type="text" id="add-ad" name="ad" required />
+          </div>
+          <div class="field">
+            <label class="label" for="add-cins">Cinsi</label>
+            <input class="input" type="text" id="add-cins" name="cins" required />
+          </div>
+          <div class="field">
+            <label class="label" for="add-dogum">Doğum Tarihi</label>
+            <input class="input" type="date" id="add-dogum" name="dogumTarihi" required />
+          </div>
+          <div class="field">
+            <label class="label" for="add-sehir">Şehir</label>
+            <input class="input" type="text" id="add-sehir" name="sehir" placeholder="Bulunduğu şehir" required />
+          </div>
+          <div class="field field--full">
+            <label class="label" for="add-iletisim">İletişim</label>
+            <input class="input" type="tel" id="add-iletisim" name="iletisim" placeholder="05xx xxx xx xx" required />
+          </div>
+          <label class="checkbox field--full">
+            <input type="checkbox" name="asi" /> Aşıları Yapıldı
+          </label>
+        </div>
+        <div class="form__actions">
+          <button type="button" class="btn btn--secondary" data-modal-close>Kapat</button>
+          <button type="submit" class="btn btn--primary">Ekle</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- Düzenleme Modalı -->
-  <div id="edit-animal-form" class="modal" style="display:none;">
-    <form class="register-form" onsubmit="updateAnimal(event)" action="#">
-      <input type="hidden" name="edit-id" />
-      <label>Fotoğraf URL'si:</label>
-      <input type="text" name="edit-foto" required />
-      <label>Adı:</label>
-      <input type="text" name="edit-ad" required />
-      <label>Cinsi:</label>
-      <input type="text" name="edit-cins" required />
-      <label><input type="checkbox" name="edit-asi" /> Aşıları Yapıldı</label>
-      <label>Doğum Tarihi:</label>
-      <input type="date" name="edit-dogum" required />
-      <label>Şehir:</label>
-      <input type="text" name="edit-sehir" required />
-      <label>İletişim:</label>
-      <input type="tel" name="edit-iletisim" required />
-      <button type="submit">Güncelle</button>
-      <button type="button" onclick="document.getElementById('edit-animal-form').style.display='none'">Kapat</button>
-    </form>
+  <div id="edit-animal-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-animal-title">
+    <div class="modal__dialog" tabindex="-1">
+      <button type="button" class="modal__close" data-modal-close aria-label="Kapat">&times;</button>
+      <h2 class="modal__title" id="edit-animal-title">Hayvanı Düzenle</h2>
+      <form class="form form--plain" id="edit-animal-form">
+        <input type="hidden" name="edit-id" />
+        <div class="form__grid">
+          <div class="field field--full photo-field">
+            <span class="label">Fotoğraf</span>
+            <div class="photo-field__row">
+              <img class="photo-field__preview" alt="Hayvanın fotoğrafı" role="button" tabindex="0" title="Büyütmek için tıkla" hidden />
+              <label class="btn btn--secondary btn--sm photo-field__pick">
+                <span class="photo-field__pick-text">Fotoğraf seç</span>
+                <input class="visually-hidden" type="file" accept="image/*" data-photo-input />
+              </label>
+            </div>
+            <input type="hidden" name="edit-foto" />
+          </div>
+          <div class="field">
+            <label class="label" for="edit-ad">Adı</label>
+            <input class="input" type="text" id="edit-ad" name="edit-ad" required />
+          </div>
+          <div class="field">
+            <label class="label" for="edit-cins">Cinsi</label>
+            <input class="input" type="text" id="edit-cins" name="edit-cins" required />
+          </div>
+          <div class="field">
+            <label class="label" for="edit-dogum">Doğum Tarihi</label>
+            <input class="input" type="date" id="edit-dogum" name="edit-dogum" required />
+          </div>
+          <div class="field">
+            <label class="label" for="edit-sehir">Şehir</label>
+            <input class="input" type="text" id="edit-sehir" name="edit-sehir" required />
+          </div>
+          <div class="field field--full">
+            <label class="label" for="edit-iletisim">İletişim</label>
+            <input class="input" type="tel" id="edit-iletisim" name="edit-iletisim" required />
+          </div>
+          <label class="checkbox field--full">
+            <input type="checkbox" name="edit-asi" /> Aşıları Yapıldı
+          </label>
+        </div>
+        <div class="form__actions">
+          <button type="button" class="btn btn--secondary" data-modal-close>Kapat</button>
+          <button type="submit" class="btn btn--primary">Güncelle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Fotoğraf Önizleme Modalı (diğer pencerelerin üstünde açılması için en sonda) -->
+  <div id="image-modal" class="modal" role="dialog" aria-modal="true" aria-label="Fotoğraf önizleme">
+    <div class="modal__dialog modal__dialog--media" tabindex="-1">
+      <button type="button" class="modal__close" data-modal-close aria-label="Kapat">&times;</button>
+      <img id="modal-image" class="modal__image" alt="">
+    </div>
   </div>
 
   <script src="script.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const ekleButonu = document.querySelector(".add-animal");
-      ekleButonu.addEventListener("click", function () {
-        document.getElementById("add-animal-form").style.display = "flex";
-      });
-    });
-
-    function addAnimal(event) {
-      event.preventDefault();
-      const ad = document.querySelector('[name="ad"]').value;
-      const cins = document.querySelector('[name="cins"]').value;
-      const asi = document.querySelector('[name="asi"]').checked;
-      const foto = document.querySelector('[name="foto"]').value;
-      const dogumTarihi = document.querySelector('[name="dogumTarihi"]').value;
-      const sehir = document.querySelector('[name="sehir"]').value;
-      const iletisim = document.querySelector('[name="iletisim"]').value;
-
-      fetch("http://localhost:3000/api/hayvanlar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ad, cins, asi, foto, dogumTarihi, sehir, iletisim })
-      })
-      .then(res => res.json())
-      .then(() => {
-        alert("Hayvan başarıyla eklendi!");
-        document.getElementById("add-animal-form").style.display = "none";
-        event.target.reset();
-        location.reload();
-      })
-      .catch(err => {
-        console.error("❌ Ekleme hatası:", err);
-        alert("Hayvan eklenemedi.");
-      });
-    }
-  </script>
 </body>
 </html>
