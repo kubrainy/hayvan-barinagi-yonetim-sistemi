@@ -32,14 +32,6 @@
     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>';
 
-  const SOCIAL_LINKS = [
-    ["Facebook", "img/icons/icons8-facebook.svg"],
-    ["X", "img/icons/icons8-x.svg"],
-    ["YouTube", "img/icons/icons8-youtube.svg"],
-    ["Instagram", "img/icons/icons8-instagram.svg"],
-    ["Reddit", "img/icons/icons8-reddit.svg"]
-  ];
-
   // ---------- <site-header action-label="GİRİŞ" action-href="giris.html" [user]> ----------
   class SiteHeader extends HTMLElement {
     connectedCallback() {
@@ -85,15 +77,13 @@
       this.replaceChildren(
         h("footer", { class: "site-footer" },
           h("div", { class: "site-footer__inner container" },
-            h("ul", { class: "social-links" },
-              SOCIAL_LINKS.map(([name, icon]) =>
-                h("li", {}, h("a", { href: "#", "aria-label": name }, h("img", { src: icon, alt: "" })))
-              )
-            ),
-            h("div", { class: "site-footer__contact" },
-              h("p", {}, `© ${year} Pet 4 Life · Hayvan sahiplenme platformudur.`),
-              h("p", {}, "İletişim: 505 217 16 75 / 312 255 10 05 · ",
-                h("a", { href: "mailto:pet4u@mail.com" }, "pet4u@mail.com"))
+            h("p", { class: "site-footer__copy" }, `© ${year} Pet 4 Life · Hayvan sahiplenme platformudur.`),
+            // İmza logosu portfolyo sitesine gider
+            h("a", {
+                class: "signature", href: "https://kubrainy.me", target: "_blank", rel: "noopener",
+                "aria-label": "Kübra Çetinkaya portfolyo sitesi (kubrainy.me)", title: "kubrainy.me"
+              },
+              h("img", { src: "img/kc-imza.svg", alt: "", width: "28", height: "40" })
             )
           )
         )
