@@ -8,9 +8,40 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // MongoDB bağlantısı
-mongoose.connect('mongodb://localhost:27017/pet4life')
-  .then(() => console.log('✅ MongoDB bağlantısı başarılı'))
-  .catch((err) => console.error('❌ MongoDB bağlantı hatası:', err.message));
+// Yerelde localhost kullanılır; Vercel'de MONGODB_URI ortam değişkeni (ör. MongoDB Atlas) verilir.
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pet4life';
+
+let baglanti = null;
+
+function veritabaninaBaglan() {
+  const durum = mongoose.connection.readyState; // 0 kopuk, 1 bağlı, 2 bağlanıyor, 3 kapanıyor
+  if (durum === 1) return Promise.resolve();
+  if (durum === 0) baglanti = null;
+
+  if (!baglanti) {
+    baglanti = mongoose.connect(MONGODB_URI, { dbName: 'pet4life', serverSelectionTimeoutMS: 8000 })
+      .then(() => console.log('✅ MongoDB bağlantısı başarılı'))
+      .catch((err) => {
+        baglanti = null; // sonraki istekte yeniden denensin
+        console.error('❌ MongoDB bağlantı hatası:', err.message);
+        throw err;
+      });
+  }
+  return baglanti;
+}
+
+// Her istekten önce bağlantının hazır olmasını sağlar (Vercel'de soğuk başlangıç ve kopan bağlantılar için).
+// Bağlanılamazsa istek 10 sn bekleyip hata vermek yerine hemen 503 döner.
+app.use(async (req, res, next) => {
+  try {
+    await veritabaninaBaglan();
+    next();
+  } catch (_) {
+    res.status(503).json({ mesaj: 'Veritabanına bağlanılamadı' });
+  }
+});
+
+veritabaninaBaglan().catch(() => {}); // yerelde başlangıçta hemen bağlan
 
 // Kullanici Modeli eklendi ✅
 const Kullanici = mongoose.model('Kullanici', {
@@ -212,7 +243,12 @@ app.get('/api/istatistikler', async (req, res) => {
   }
 });
 
-// Sunucuyu başlat
-app.listen(3001, () => {
-  console.log('🚀 Sunucu 3001 portunda çalışıyor');
-});
+// Yerelde `node server.js` ile çalıştırılınca sunucuyu başlat.
+// Vercel'de ise api/index.js bu uygulamayı fonksiyon olarak dışa aktarır (listen çağrılmaz).
+if (require.main === module) {
+  app.listen(3001, () => {
+    console.log('🚀 Sunucu 3001 portunda çalışıyor');
+  });
+}
+
+module.exports = app;

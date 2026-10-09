@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giriş</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/forms.css" />
+  <script src="js/components.js"></script>
+</head>
+<body>
+  <site-header action-label="AnaSayfa" action-href="index.html"></site-header>
+
+  <main class="auth">
+    <h2 class="auth__title">Giriş Ekranı</h2>
+    <form class="form form--narrow" id="loginForm">
+      <div class="field">
+        <label class="label" for="user-id">ID (kullanıcı adı)</label>
+        <input class="input" type="text" id="user-id" name="user-id" autocomplete="username" required />
+      </div>
+
+      <div class="field">
+        <label class="label" for="password">Şifre</label>
+        <input class="input" type="password" id="password" name="password" autocomplete="current-password" required />
+      </div>
+
+      <div class="form__actions">
+        <button class="btn btn--secondary" type="button" onclick="window.location.href='uyeol.html'">Üye Ol</button>
+        <button class="btn btn--primary" type="submit">Giriş</button>
+      </div>
+    </form>
+  </main>
+
+  <site-footer></site-footer>
+
+  <script src="js/giris.js"></script>
+</body>
+</html>
