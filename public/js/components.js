@@ -83,7 +83,7 @@
                 class: "signature", href: "https://kubrainy.me", target: "_blank", rel: "noopener",
                 "aria-label": "Kübra Çetinkaya portfolyo sitesi (kubrainy.me)", title: "kubrainy.me"
               },
-              h("img", { src: "img/kc-imza.svg", alt: "", width: "28", height: "40" })
+              h("img", { src: "img/kc-imza.svg", alt: "", width: "14", height: "20" })
             )
           )
         )
