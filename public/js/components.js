@@ -59,7 +59,7 @@
         h("header", { class: "site-header" },
           h("div", { class: "site-header__inner container" },
             h("a", { class: "brand", href: "index.html" },
-              h("img", { class: "brand__logo", src: "img/icons/icons8-pet-50.png", alt: "", width: "40", height: "40" }),
+              h("img", { class: "brand__logo", src: "img/logo.svg", alt: "", width: "40", height: "40" }),
               h("span", { class: "brand__name" }, "PET 4 LİFE")
             ),
             actions

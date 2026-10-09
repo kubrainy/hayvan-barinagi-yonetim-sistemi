@@ -46,7 +46,8 @@ hayvan-barinagi-yonetim-sistemi/
 │   ├── js/
 │   │   ├── components.js    # <site-header>, <site-footer>, modal, hayvan kartı
 │   │   ├── giris.js  uyeol.js  kullanici.js  yonetici.js   # sayfa betikleri
-│   └── img/                 # hero.jpg, kc-imza.svg (imza), icons/ altında logo
+│   ├── favicon.ico  apple-touch-icon.png   # sekme ve ana ekran simgesi
+│   └── img/                 # hero.jpg, logo.svg (logo), kc-imza.svg (imza)
 ├── api/index.js             # Vercel giriş noktası (Express uygulamasını dışa aktarır)
 ├── server.js                # Express API + MongoDB (yerelde de buradan çalışır)
 ├── scripts/seed.js          # Örnek hayvanları ekler (silme yapmaz)
